@@ -2,6 +2,7 @@
  - name: this is main playbook from here all roles will be called
    hosts: localhost
    connection: local
-   become: true
+   vars_files:
+     - vault.yaml
    roles:
      - ec2_setup

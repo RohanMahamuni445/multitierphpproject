@@ -4,6 +4,8 @@
    amazon.aws.ec2_instance:
      name: "ec2_for_php"
      key_name: "formumbairegion"
+     aws_access_key: "{{ec2_access_key}}"
+     aws_secret_key: "{{ec2_secret_key}}"
      instance_type: t2.micro
      security_group: sg-0d250325757a82cb0
      network_interfaces:
