@@ -1,2 +1,13 @@
 ---
 # tasks file for ec2_setup
+ - name: start an instance with a public ip
+   amazon.aws.ec2_instance:
+     name: "ec2_for_php"
+     key_name: "formumbairegion"
+     instance_type: t2.micro
+     security_group: sg-0d250325757a82cb0
+     network_interfaces:
+       - assign_public_ip: true
+     image_id: ami-053b12d3152c0cc71
+     tags:
+       Enviornment: Production
