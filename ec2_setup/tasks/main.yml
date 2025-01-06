@@ -27,9 +27,14 @@
      delay: 10
      timeout: 300
 
- - name: ssh passwordless authentication
-   ansible.builtin.authorized_key:
-     user: ubuntu
-     state: present
-     key: "{{ lookup('file', '/home/rohan/.ssh/id_rsa.pub') }}"
+ - name: Copy public key to EC2 instance
+   copy:
+     src: /home/rohan/.ssh/id_rsa.pub
+     dest: "/home/ubuntu/.ssh/authorized_keys"
+     owner: ubuntu
+     group: ubuntu
+     mode: '0600'
    delegate_to: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
+   remote_user: ubuntu
+   become: true
+
