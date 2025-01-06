@@ -14,3 +14,22 @@
      image_id: ami-053b12d3152c0cc71
      tags:
        Enviornment: Production
+   register: ec2_info
+
+ - name: debug to check the values
+   debug:
+     var: ec2_info
+
+ - name: wait for port 22 to become available
+   wait_for:
+     host: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
+     port: 22
+     delay: 10
+     timeout: 300
+
+ - name: ssh passwordless authentication
+   ansible.builtin.authorized_key:
+     user: ubuntu
+     state: present
+     key: "{{ lookup('file', '/home/rohan/.ssh/id_rsa.pub') }}"
+   delegate_to: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
