@@ -1,40 +1,44 @@
 ---
 # tasks file for ec2_setup
- - name: start an instance with a public ip
-   amazon.aws.ec2_instance:
-     name: "ec2_for_php"
-     key_name: "formumbairegion"
-     region: ap-south-1
-     aws_access_key: "{{ec2_access_key}}"
-     aws_secret_key: "{{ec2_secret_key}}"
-     instance_type: t2.micro
-     security_group: sg-0d250325757a82cb0
-     network_interfaces:
-       - assign_public_ip: true
-     image_id: ami-053b12d3152c0cc71
-     tags:
-       Enviornment: Production
-   register: ec2_info
+# tasks file for ec2_setup
 
- - name: debug to check the values
-   debug:
-     var: ec2_info
+- name: start an instance with a public ip
+  amazon.aws.ec2_instance:
+    name: "ec2_for_php"
+    key_name: "formumbairegion"
+    region: ap-south-1
+    aws_access_key: "{{ec2_access_key}}"
+    aws_secret_key: "{{ec2_secret_key}}"
+    instance_type: t2.micro
+    security_group: sg-0d250325757a82cb0
+    network_interfaces:
+      - assign_public_ip: true
+    image_id: ami-053b12d3152c0cc71
+    tags:
+      Enviornment: Production
+    user_data: |
+      #!/bin/bash
+      echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDP333FJDyGtOYuP7V2vrlF9+wAbC2aJNgZaVP70cTKGlgi3ZV77GdE/aj6ZKJ66BlQVXBBtZFpSpRFgEgxwRl6FdD1lD97MM41cIUDU+IvBoX27LfrVtMdrgR1QbS9HtBJxn3KDaYtXSwGtLsQZvk+T5MTn+Jeup8IguqhUqHIq37TWXlX9qtX6Vw8aWccyLv6b7hGpm+9JASBlmFs4OejPJXIeemG0FC5TzzunkCPWN/swlmDF138rmQ59xZaXHUPMRZ2dsX4miDAbgiBskoXD4MDaHVgiZgqoEC2ioUUPPZ0jzelf6hPAgqCObfcRXjnyQ8+jpBsMsUmsz3PLyg7 rohan@DESKTOP-G0IPKA5" > /home/ubuntu/.ssh/authorized_keys
+      chmod 600 /home/ubuntu/.ssh/authorized_keys
+      chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
+      sleep 30
 
- - name: wait for port 22 to become available
-   wait_for:
-     host: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
-     port: 22
-     delay: 10
-     timeout: 300
+  register: ec2_info
 
- - name: Copy public key to EC2 instance
-   copy:
-     src: /home/rohan/.ssh/id_rsa.pub
-     dest: "/home/ubuntu/.ssh/authorized_keys"
-     owner: ubuntu
-     group: ubuntu
-     mode: '0600'
-   delegate_to: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
-   remote_user: ubuntu
-   become: true
+- name: debug to check the values
+  debug:
+    var: ec2_info
+
+- name: Ensure EC2 instance has a public IP
+  debug:
+    msg: "Public IP found: {{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
+
+- name: wait for port 22 to become available
+  wait_for:
+    host: "{{ ec2_info.instances[0].network_interfaces[0].association.public_ip }}"
+    port: 22
+    delay: 20
+    timeout: 600  # Extended timeout to give more time for the instance to start
+
+
 
