@@ -14,17 +14,30 @@
     mode: '0755'
 
 - name: Run the XAMPP installer
+  become: true
   ansible.builtin.shell:
-    cmd: "/tmp/xampp-installer.run"
+    cmd: "/tmp/xampp-installer.run --mode unattended"
     creates: "/opt/lampp"
 
 - name: Start XAMPP
+  become: true
   ansible.builtin.command:
     cmd: "/opt/lampp/lampp start"
 
-- name: Ensure XAMPP starts on boot
-  ansible.builtin.shell:
-    cmd: "ln -s /opt/lampp/lampp /etc/init.d/lampp && update-rc.d lampp defaults"
-    args:
-      creates: "/etc/init.d/lampp"
+- name: Start MYSQL
+  become: true
+  ansible.builtin.command:
+    cmd: "/opt/lampp/lampp startmysql"
+
+- name: Start XAMPP
+  become: true
+  ansible.builtin.command:
+    cmd: "/opt/lampp/lampp startftp"
+
+
+      #- name: Ensure XAMPP starts on boot
+      #  ansible.builtin.shell:
+      #    cmd: "ln -s /opt/lampp/lampp /etc/init.d/lampp && update-rc.d lampp defaults"
+      #    args:
+      #      creates: "/etc/init.d/lampp"
 
