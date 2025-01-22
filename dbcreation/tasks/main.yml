@@ -1,0 +1,18 @@
+---
+# tasks file for dbcreation
+
+- name: Install MySQL client
+  become: true
+  ansible.builtin.apt:
+    name: python3-mysql.connector  # Install the required Python MySQL package
+    state: present
+
+- name: Create database for multitier project
+  community.mysql.mysql_db:
+    name: multitier_db
+    state: present
+    login_user: root
+    login_host: 127.0.0.1
+    login_unix_socket: /opt/lampp/var/mysql/mysql.sock
+    login_password: ""
+

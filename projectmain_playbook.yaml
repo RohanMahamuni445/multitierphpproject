@@ -15,3 +15,9 @@
    remote_user: ubuntu
    roles:
      - role: xampp_installation
+
+ - name: DB creation 
+   hosts: dynamic_ec2
+   remote_user: ubuntu
+   roles:
+     - role: dbcreation
