@@ -8,13 +8,8 @@
    vars_files:
      - vault.yaml
    roles:
+     - iamrolecreationall
      - ec2_setup
-
- - name: creating an iam role...
-   hosts: localhost
-   remote_user: ubuntu
-   roles:
-     - role: iamrolecreationall
 
  - name: Install XAMPP on EC2
    hosts: dynamic_ec2
