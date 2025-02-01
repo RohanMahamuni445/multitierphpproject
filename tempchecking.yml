@@ -7,8 +7,6 @@
      ansible_python_interpreter: "/home/rohan/multitierphpproject/myenv/bin/python3"
    vars_files:
      - vault.yaml
-   roles:
-     - ec2_setup
 
  - name: creating an iam role...
    hosts: localhost
@@ -16,14 +14,3 @@
    roles:
      - role: iamrolecreationall
 
- - name: Install XAMPP on EC2
-   hosts: dynamic_ec2
-   remote_user: ubuntu
-   roles:
-     - role: xampp_installation
-
- - name: DB creation 
-   hosts: dynamic_ec2
-   remote_user: ubuntu
-   roles:
-     - role: dbcreation

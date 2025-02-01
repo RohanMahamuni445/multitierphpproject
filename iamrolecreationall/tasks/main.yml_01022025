@@ -1,0 +1,68 @@
+---
+# tasks file for iamrolecreationall
+
+- name: Create IAM role with specific policies and trust relationship
+  amazon.aws.iam_role:
+    name: MyCustomIAMRole
+    assume_role_policy_document: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "codedeploy.amazonaws.com",
+                "ec2.amazonaws.com",
+                "codedeploy.ap-south-1.amazonaws.com"
+              ]
+            },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      }
+    state: present
+    iam_name: MyCustomIAMRole    # Added iam_name here for role
+    iam_type: role               # Specify the IAM type as 'role'
+    policy_name: AdministratorAccess  # Added policy_name here for clarification
+
+- name: Attach AdministratorAccess policy to the IAM role
+  amazon.aws.iam_policy:
+    policy_arn: arn:aws:iam::aws:policy/AdministratorAccess
+    roles:
+      - MyCustomIAMRole
+    iam_name: MyCustomIAMRole    # Added required iam_name
+    iam_type: role               # Added required iam_type
+    policy_name: AdministratorAccess  # Added required policy_name
+    state: present
+
+- name: Attach AmazonS3ReadOnlyAccess policy to the IAM role
+  amazon.aws.iam_policy:
+    policy_arn: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+    roles:
+      - MyCustomIAMRole
+    iam_name: MyCustomIAMRole    # Added required iam_name
+    iam_type: role               # Added required iam_type
+    policy_name: AmazonS3ReadOnlyAccess  # Added required policy_name
+    state: present
+
+- name: Attach AWSCodeDeployDeployerAccess policy to the IAM role
+  amazon.aws.iam_policy:
+    policy_arn: arn:aws:iam::aws:policy/AWSCodeDeployDeployerAccess
+    roles:
+      - MyCustomIAMRole
+    iam_name: MyCustomIAMRole    # Added required iam_name
+    iam_type: role               # Added required iam_type
+    policy_name: AWSCodeDeployDeployerAccess  # Added required policy_name
+    state: present
+
+- name: Attach AWSCodeDeployRole policy to the IAM role
+  amazon.aws.iam_policy:
+    policy_arn: arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
+    roles:
+      - MyCustomIAMRole
+    iam_name: MyCustomIAMRole    # Added required iam_name
+    iam_type: role               # Added required iam_type
+    policy_name: AWSCodeDeployRole  # Added required policy_name
+    state: present
+
