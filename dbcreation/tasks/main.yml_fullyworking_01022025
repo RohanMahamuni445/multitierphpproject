@@ -15,8 +15,8 @@
     login_unix_socket: /opt/lampp/var/mysql/mysql.sock
     login_password: ""
 
-      #- name: Import SQL file using shell command
-      #  become: true
-      #ansible.builtin.shell: |
-      #/opt/lampp/bin/mysql -u root --socket=/opt/lampp/var/mysql/mysql.sock library_db < /root/library_db.sql
+- name: Import SQL file using shell command
+  become: true
+  ansible.builtin.shell: |
+    /opt/lampp/bin/mysql -u root --socket=/opt/lampp/var/mysql/mysql.sock library_db < /root/library_db.sql
 

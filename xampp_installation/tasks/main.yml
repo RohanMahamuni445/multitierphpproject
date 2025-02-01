@@ -1,43 +1,69 @@
 ---
-# tasks file for xampp_installation
+# tasks file for dbcreation
 
-- name: Update package cache
+
+- name: Install MySQL client
   become: true
   ansible.builtin.apt:
-    update_cache: yes
-  when: ansible_os_family == "Debian"
+    name: python3-mysql.connector  # Install the required Python MySQL package
+    state: present
 
-- name: Download XAMPP installer
-  ansible.builtin.get_url:
-    url: "https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run/download"
-    dest: "/tmp/xampp-installer.run"
-    mode: '0755'
-
-- name: Run the XAMPP installer
+- name: Install pip for Python 3
   become: true
-  ansible.builtin.shell:
-    cmd: "/tmp/xampp-installer.run --mode unattended"
-    creates: "/opt/lampp"
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
 
-- name: Start XAMPP
+- name: Install python3-venv (needed for virtualenv)
   become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp start"
+  ansible.builtin.apt:
+    name: python3-venv
+    state: present
 
-- name: Start MYSQL
+- name: Install pkg-config and MySQL development libraries
   become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp startmysql"
+  ansible.builtin.apt:
+    name:
+      - pkg-config
+      - libmysqlclient-dev
+    state: present
 
-- name: Start XAMPP
+- name: Set Python interpreter to Python 3
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Verify Python Interpreter
+  ansible.builtin.debug:
+    msg: "{{ ansible_python_interpreter }}"
+
+- name: Create a Python virtual environment
   become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp startftp"
+  ansible.builtin.shell: |
+    python3 -m venv /opt/lampp/htdocs/myenv
 
+- name: Install PyMySQL in the virtual environment
+  become: true
+  pip:
+    name: PyMySQL
+    executable: /opt/lampp/htdocs/myenv/bin/pip
+    state: present
 
-      #- name: Ensure XAMPP starts on boot
-      #  ansible.builtin.shell:
-      #    cmd: "ln -s /opt/lampp/lampp /etc/init.d/lampp && update-rc.d lampp defaults"
-      #    args:
-      #      creates: "/etc/init.d/lampp"
+- name: Install mysqlclient in the virtual environment
+  become: true
+  pip:
+    name: mysqlclient
+    executable: /opt/lampp/htdocs/myenv/bin/pip
+    state: present
+
+- name: Set Python interpreter to virtualenv
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: /opt/lampp/htdocs/myenv/bin/python
+
+- name: Create database for multitier project
+  community.mysql.mysql_db:
+    name: library_db
+    state: present
+    login_user: root
+    login_unix_socket: /opt/lampp/var/mysql/mysql.sock
+    login_password: ""
 
