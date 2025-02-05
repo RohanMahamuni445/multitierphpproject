@@ -98,33 +98,6 @@
     login_unix_socket: /opt/lampp/var/mysql/mysql.sock
     login_password: ""
 
-- name: Install a list of packages
-  become: true
-  ansible.builtin.apt:
-    pkg:
-      - ruby-full
-      - wget
-
-- name: download the aws-code-deploy agent script
-  become: true
-  ansible.builtin.command:
-    cmd: "wget https://aws-codedeploy-ap-south-1.s3.ap-south-1.amazonaws.com/latest/install"
-
-
-- name: give the permission to downloaded script
-  become: true
-  ansible.builtin.command:
-    cmd: "chmod +x ./install"
-
-- name: installing..
-  become: true
-  ansible.builtin.command:
-    cmd: "sudo ./install auto"
-
-- name: checking the codedeploystatus 
-  become: true
-  ansible.builtin.command:
-    cmd: "sudo service codedeploy-agent status"
 
 
       #- name: Ensure XAMPP starts on boot
