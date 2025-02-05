@@ -1,43 +1,10 @@
 ---
-# tasks file for xampp_installation
+# tasks file for dbcreation
 
-- name: Update package cache
+- name: Update apt cache
   become: true
   ansible.builtin.apt:
     update_cache: yes
-  when: ansible_os_family == "Debian"
-
-- name: Download XAMPP installer
-  ansible.builtin.get_url:
-    url: "https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run/download"
-    dest: "/tmp/xampp-installer.run"
-    mode: '0755'
-
-- name: install net tool it will be needed for start apache
-  become: true
-  ansible.builtin.command:
-    cmd: "apt install net-tools -y"
-
-- name: Run the XAMPP installer
-  become: true
-  ansible.builtin.shell:
-    cmd: "/tmp/xampp-installer.run --mode unattended"
-    creates: "/opt/lampp"
-
-- name: Start XAMPP
-  become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp start"
-
-- name: Start MYSQL
-  become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp startmysql"
-
-- name: Start XAMPP
-  become: true
-  ansible.builtin.command:
-    cmd: "/opt/lampp/lampp startftp"
 
 - name: Install MySQL client dependencies
   become: true
@@ -97,12 +64,4 @@
     login_user: root
     login_unix_socket: /opt/lampp/var/mysql/mysql.sock
     login_password: ""
-
-
-
-      #- name: Ensure XAMPP starts on boot
-      #  ansible.builtin.shell:
-      #    cmd: "ln -s /opt/lampp/lampp /etc/init.d/lampp && update-rc.d lampp defaults"
-      #    args:
-      #      creates: "/etc/init.d/lampp"
 

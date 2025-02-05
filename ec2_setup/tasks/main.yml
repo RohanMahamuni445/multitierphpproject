@@ -4,7 +4,7 @@
 
 - name: start an instance with a public ip
   amazon.aws.ec2_instance:
-    name: "ec2_for_php1"
+    name: "ec2_for_php2"
     key_name: "formumbairegion"
     region: ap-south-1
     aws_access_key: "{{ec2_access_key}}"
